@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	paths := aoc.FileToStrings("input/03.txt")
+	paths := aoc.FileLinesToStringSlice("input/03.txt")
 	fmt.Println(findClosestIntersection(paths[0], paths[1]))
 }
 

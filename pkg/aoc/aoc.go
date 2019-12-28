@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // Check panics if the error is not nil
@@ -34,22 +35,34 @@ func Atoi(s string) int {
 	return i
 }
 
-// FileToStrings reads a file into an array of strings
-func FileToStrings(filePath string) []string {
+// FileToBytes reads a file into an array of bytes
+func FileToBytes(filePath string) []byte {
+	bs, err := ioutil.ReadFile(filePath)
+	Check(err)
+	return bs
+}
+
+// FileToString reads a file into a string
+func FileToString(filePath string) string {
+	return string(FileToBytes(filePath))
+}
+
+// FileLinesToStringSlice reads the lines of a file into a slice of strings
+func FileLinesToStringSlice(filePath string) []string {
 	f, err := os.Open(filePath)
 	Check(err)
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
-	var lines []string
+	var strs []string
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		strs = append(strs, scanner.Text())
 	}
 	Check(scanner.Err())
-	return lines
+	return strs
 }
 
-// FileToInts reads a file into an array of strings
-func FileToInts(filePath string) []int {
+// FileLinesToIntSlice reads the lines of a file into a slice of ints
+func FileLinesToIntSlice(filePath string) []int {
 	f, err := os.Open(filePath)
 	Check(err)
 	defer f.Close()
@@ -62,14 +75,29 @@ func FileToInts(filePath string) []int {
 	return ints
 }
 
-// FileToBytes reads a file into an array of bytes
-func FileToBytes(filePath string) []byte {
-	bs, err := ioutil.ReadFile(filePath)
-	Check(err)
-	return bs
+// FileToIntSlice reads a CSV file into a slice of ints
+func FileToIntSlice(filePath string) []int {
+	var ints []int
+	for _, s := range strings.Split(FileToString(filePath), ",") {
+		ints = append(ints, Atoi(s))
+	}
+	return ints
 }
 
-// FileToString reads a file into a string
-func FileToString(filePath string) string {
-	return string(FileToBytes(filePath))
+// FileLinesToIntSliceSlice reads a file where each line is CSV into a slice of slices of ints
+func FileLinesToIntSliceSlice(filePath string) [][]int {
+	f, err := os.Open(filePath)
+	Check(err)
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	var ints [][]int
+	for scanner.Scan() {
+		var xs []int
+		for _, s := range strings.Split(scanner.Text(), ",") {
+			xs = append(xs, Atoi(s))
+		}
+		ints = append(ints, xs)
+	}
+	Check(scanner.Err())
+	return ints
 }

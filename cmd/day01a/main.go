@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	xs := aoc.FileToInts("input/01.txt")
+	xs := aoc.FileLinesToIntSlice("input/01.txt")
 	total := 0
 	for _, x := range xs {
 		total += calculateFuel(x)
